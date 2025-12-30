@@ -190,8 +190,9 @@ export class EnactApiClient {
 
   constructor(options: ApiClientOptions = {}) {
     // Use the correct hosted Supabase URL from environment variables
-    const defaultUrl = typeof window !== 'undefined' && (window as any).importMeta?.env?.VITE_SUPABASE_URL
-      ? `${(window as any).importMeta.env.VITE_SUPABASE_URL}/functions/v1`
+    const envUrl = import.meta.env?.VITE_SUPABASE_URL;
+    const defaultUrl = envUrl
+      ? `${envUrl}/functions/v1`
       : "https://aoobxqbkrmhhxtscuukc.supabase.co/functions/v1";
 
     this.baseUrl = options.baseUrl ?? defaultUrl;

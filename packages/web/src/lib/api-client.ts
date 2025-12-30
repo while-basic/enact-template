@@ -15,6 +15,14 @@ export interface ApiClientOptions {
   timeout?: number;
 }
 
+interface ViteWindow extends Window {
+  importMeta?: {
+    env?: {
+      VITE_SUPABASE_URL?: string;
+    };
+  };
+}
+
 export interface ApiAuthor {
   username: string;
   avatar_url?: string;
@@ -190,8 +198,10 @@ export class EnactApiClient {
 
   constructor(options: ApiClientOptions = {}) {
     // Use the correct hosted Supabase URL from environment variables
-    const defaultUrl = typeof window !== 'undefined' && (window as any).importMeta?.env?.VITE_SUPABASE_URL
-      ? `${(window as any).importMeta.env.VITE_SUPABASE_URL}/functions/v1`
+    const envWindow = typeof window !== "undefined" ? (window as ViteWindow) : undefined;
+    const envUrl = envWindow?.importMeta?.env?.VITE_SUPABASE_URL;
+    const defaultUrl = envUrl
+      ? `${envUrl}/functions/v1`
       : "https://aoobxqbkrmhhxtscuukc.supabase.co/functions/v1";
 
     this.baseUrl = options.baseUrl ?? defaultUrl;

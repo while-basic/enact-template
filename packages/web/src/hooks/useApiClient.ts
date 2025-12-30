@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { EnactApiClient } from "@/lib/api-client";
-import { API_URL } from "@/lib/supabase";
+import { API_URL, SUPABASE_ANON_KEY } from "@/lib/supabase";
 import { useMemo } from "react";
 
 /**
@@ -14,6 +14,7 @@ export function useApiClient(): EnactApiClient {
     return new EnactApiClient({
       baseUrl: API_URL,
       authToken: session?.access_token,
+      anonKey: SUPABASE_ANON_KEY,
     });
   }, [session?.access_token]);
 }
@@ -29,6 +30,7 @@ export function useApiClientWithAuth(): { client: EnactApiClient; isAuthLoading:
     return new EnactApiClient({
       baseUrl: API_URL,
       authToken: session?.access_token,
+      anonKey: SUPABASE_ANON_KEY,
     });
   }, [session?.access_token]);
 

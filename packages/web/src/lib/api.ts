@@ -8,10 +8,11 @@ import {
   getUserTools as apiGetUserTools,
   searchTools as apiSearchTools,
 } from "./api-client";
-import { API_URL } from "./supabase";
+import { API_URL, SUPABASE_ANON_KEY } from "./supabase";
 
 export const apiClient = new EnactApiClient({
   baseUrl: API_URL,
+  anonKey: SUPABASE_ANON_KEY,
 });
 
 // Re-export API functions

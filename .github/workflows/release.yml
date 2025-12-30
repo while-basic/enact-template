@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.18"
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsecret-1-dev
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build all packages
+        run: bun run build
+
+      - name: Test
+        run: bun run test
+
+  build-binaries:
+    needs: test
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: bun-linux-x64
+            artifact: enact-linux-x64
+          - os: ubuntu-latest
+            target: bun-linux-arm64
+            artifact: enact-linux-arm64
+          - os: macos-latest
+            target: bun-darwin-x64
+            artifact: enact-darwin-x64
+          - os: macos-latest
+            target: bun-darwin-arm64
+            artifact: enact-darwin-arm64
+          - os: windows-latest
+            target: bun-windows-x64
+            artifact: enact-windows-x64.exe
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.18"
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsecret-1-dev
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Verify sigstore packages
+        shell: bash
+        run: |
+          echo "=== Checking @enactprotocol/sigstore-sign version ==="
+          cat node_modules/@enactprotocol/sigstore-sign/package.json | grep '"version"'
+          echo "=== Checking for @sigstore/bundle or @sigstore/core in dist ==="
+          grep -r "@sigstore/bundle\|@sigstore/core" node_modules/@enactprotocol/sigstore-sign/dist/ && echo "ERROR: Found @sigstore references!" && exit 1 || echo "OK: No problematic @sigstore references"
+
+      - name: Build CLI
+        run: bun run build
+
+      - name: Compile binary
+        shell: bash
+        run: bun build packages/cli/dist/index.js --compile --target=${{ matrix.target }} --outfile=${{ matrix.artifact }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  # NOTE: npm publishing is done manually for now using npm trusted publishers
+  # To publish manually, see DEPLOYMENT.md for instructions
+
+  release:
+    needs: [build-binaries]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+
+      - name: Create checksums
+        run: |
+          cd binaries
+          for dir in */; do
+            cd "$dir"
+            sha256sum * >> ../checksums.txt || true
+            cd ..
+          done
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            binaries/enact-linux-x64/enact-linux-x64
+            binaries/enact-linux-arm64/enact-linux-arm64
+            binaries/enact-darwin-x64/enact-darwin-x64
+            binaries/enact-darwin-arm64/enact-darwin-arm64
+            binaries/enact-windows-x64.exe/enact-windows-x64.exe
+            binaries/checksums.txt
+          generate_release_notes: true

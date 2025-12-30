@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    // Type Checking
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+
+    // Module Resolution
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "noEmit": true,
+
+    // Interop Constraints
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+
+    // Language and Environment
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": ["bun-types"],
+
+    // Emit
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+
+    // Completeness
+    "skipLibCheck": true
+  },
+  "include": [
+    "packages/api/src/**/*",
+    "packages/cli/src/**/*",
+    "packages/shared/src/**/*",
+    "packages/trust/src/**/*",
+    "packages/secrets/src/**/*",
+    "packages/mcp-server/src/**/*",
+    "packages/*/tests/**/*"
+  ],
+  "exclude": ["node_modules", "dist", "**/node_modules", "**/dist", "packages/server/**/*"]
+}

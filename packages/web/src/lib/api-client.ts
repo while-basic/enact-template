@@ -197,12 +197,15 @@ export class EnactApiClient {
   private authToken: string | undefined;
 
   constructor(options: ApiClientOptions = {}) {
-    // Use the correct hosted Supabase URL from environment variables
-    const envWindow = typeof window !== "undefined" ? (window as ViteWindow) : undefined;
-    const envUrl = envWindow?.importMeta?.env?.VITE_SUPABASE_URL;
-    const defaultUrl = envUrl
-      ? `${envUrl}/functions/v1`
-      : "https://aoobxqbkrmhhxtscuukc.supabase.co/functions/v1";
+  // Use the correct hosted Supabase URL from environment variables
+const envWindow =
+  typeof window !== "undefined" ? (window as ViteWindow) : undefined;
+
+const envUrl = envWindow?.importMeta?.env?.VITE_SUPABASE_URL;
+
+const defaultUrl = envUrl
+  ? `${envUrl}/functions/v1`
+  : "https://aoobxqbkrmhhxtscuukc.supabase.co/functions/v1";
 
     this.baseUrl = options.baseUrl ?? defaultUrl;
     this.timeout = options.timeout ?? 30000;

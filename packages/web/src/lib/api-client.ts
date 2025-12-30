@@ -223,9 +223,8 @@ export class EnactApiClient {
       headers.set("apikey", this.anonKey);
     }
 
-    if (this.authToken ?? this.anonKey) {
-      const token = this.authToken ?? this.anonKey;
-      headers.set("Authorization", `Bearer ${token}`);
+    if (this.authToken) {
+      headers.set("Authorization", `Bearer ${this.authToken}`);
     }
 
     return headers;

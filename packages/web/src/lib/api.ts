@@ -12,7 +12,7 @@ import { API_URL, SUPABASE_ANON_KEY } from "./supabase";
 
 export const apiClient = new EnactApiClient({
   baseUrl: API_URL,
-  authToken: SUPABASE_ANON_KEY,
+  authToken: SUPABASE_ANON_KEY || undefined,
 });
 
 // Re-export API functions

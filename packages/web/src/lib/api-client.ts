@@ -12,6 +12,7 @@
 export interface ApiClientOptions {
   baseUrl?: string;
   authToken?: string;
+  anonKey?: string;
   timeout?: number;
 }
 
@@ -195,6 +196,7 @@ export class EnactApiClient {
   private readonly baseUrl: string;
   private readonly timeout: number;
   private authToken: string | undefined;
+  private readonly anonKey: string | undefined;
 
   constructor(options: ApiClientOptions = {}) {
     // Use the correct hosted Supabase URL from environment variables
@@ -207,6 +209,7 @@ export class EnactApiClient {
     this.baseUrl = options.baseUrl ?? defaultUrl;
     this.timeout = options.timeout ?? 30000;
     this.authToken = options.authToken;
+    this.anonKey = options.anonKey;
   }
 
   setAuthToken(token: string | undefined): void {
@@ -225,6 +228,10 @@ export class EnactApiClient {
     const headers = new Headers();
     headers.set("Accept", "application/json");
     headers.set("Content-Type", "application/json");
+
+    if (this.anonKey) {
+      headers.set("apikey", this.anonKey);
+    }
 
     if (this.authToken) {
       headers.set("Authorization", `Bearer ${this.authToken}`);

@@ -11,10 +11,10 @@ export function useApiClient(): EnactApiClient {
   const { session } = useAuth();
 
   return useMemo(() => {
-    const authToken = session?.access_token || SUPABASE_ANON_KEY;
     return new EnactApiClient({
       baseUrl: API_URL,
-      authToken,
+      authToken: session?.access_token,
+      anonKey: SUPABASE_ANON_KEY,
     });
   }, [session?.access_token]);
 }
@@ -27,10 +27,10 @@ export function useApiClientWithAuth(): { client: EnactApiClient; isAuthLoading:
   const { session, loading } = useAuth();
 
   const client = useMemo(() => {
-    const authToken = session?.access_token || SUPABASE_ANON_KEY;
     return new EnactApiClient({
       baseUrl: API_URL,
-      authToken,
+      authToken: session?.access_token,
+      anonKey: SUPABASE_ANON_KEY,
     });
   }, [session?.access_token]);
 
